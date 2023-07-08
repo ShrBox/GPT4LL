@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.21)
 
-project(plugin)
+project(GPT4LL)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_BUILD_TYPE Release)
@@ -13,10 +13,12 @@ file(GLOB_RECURSE SRC_FILES_DIR
 
 include_directories(
     ${CMAKE_SOURCE_DIR}/SDK/include
+	${CMAKE_SOURCE_DIR}/include
 )
 
 link_directories(
     ${CMAKE_SOURCE_DIR}/SDK/lib
+	${CMAKE_SOURCE_DIR}/lib
 )
 
 add_definitions(
@@ -69,6 +71,9 @@ target_link_libraries(${CMAKE_PROJECT_NAME}
 	"${CMAKE_SOURCE_DIR}/SDK/lib/bedrock_server_api.lib"
 	"${CMAKE_SOURCE_DIR}/SDK/lib/bedrock_server_var.lib"
 	"${CMAKE_SOURCE_DIR}/SDK/lib/SymDBHelper.lib"
+	"${CMAKE_SOURCE_DIR}/lib/libcrypto.lib"
+	"${CMAKE_SOURCE_DIR}/lib/libssl.lib"
+	"${CMAKE_SOURCE_DIR}/lib/libcurl.lib"
 )
 
 add_custom_command(TARGET ${CMAKE_PROJECT_NAME} PRE_BUILD
