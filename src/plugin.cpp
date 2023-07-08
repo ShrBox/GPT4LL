@@ -44,5 +44,5 @@ void InitOpenAI() {
 void PluginInit() {
     InitConfig();
     InitOpenAI();
-    ChatModule::Init(Settings::prompt, Settings::model);
+    ChatModule::Init(Settings::prompt, Settings::model, Settings::format);
 }

@@ -18,6 +18,7 @@ namespace Settings {
     std::string proxy = "";
     std::string apikey = "";
     std::string model = "gpt-3.5-turbo";
+    std::string format = "GPT > ";
     nlohmann::json globaljson()
     {
         nlohmann::json json;
@@ -25,6 +26,7 @@ namespace Settings {
         json["proxy"] = proxy;
         json["apikey"] = apikey;
         json["model"] = model;
+        json["format"] = format;
         return json;
     }
 
@@ -34,6 +36,7 @@ namespace Settings {
         INITJSON("proxy", proxy);
         INITJSON("apikey", apikey)
         INITJSON("model", model);
+        INITJSON("format", format)
     }
     void WriteDefaultConfig(const std::string &fileName)
     {

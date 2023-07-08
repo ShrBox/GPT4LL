@@ -11,6 +11,7 @@ namespace ChatModule {
     nlohmann::basic_json init_request_header;
     nlohmann::basic_json request_header;
     std::vector<std::string> enabledPlayers;
+    std::string reply_format;
 
     bool processChatMessage(Event::PlayerChatEvent ev) {
         if (std::find(enabledPlayers.begin(), enabledPlayers.end(), ev.mPlayer->getXuid()) != enabledPlayers.end()) {
@@ -85,12 +86,13 @@ namespace ChatModule {
                               }, CommandPermissionLevel::Any);
     }
 
-    void Init(std::string &prompt, std::string &model) {
+    void Init(std::string &prompt, std::string &model, std::string &format) {
         registerCommands();
         init_request_header = nlohmann::basic_json({
                                                            {"model",    model},
                                                            {"messages", {{{"role", "system"}, {"content", prompt}}}}
                                                    });
+        reply_format = format;
         Event::PlayerChatEvent::subscribe(processChatMessage);
     }
 }
