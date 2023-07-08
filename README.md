@@ -1,10 +1,10 @@
 # GPT4LL
 
-GPT for LiteLoaderBDS
+Chat with GPT in Bedrock Dedicated Server with LiteLoaderBDS
 
 ## Usage
 
-`/chatgpt chat` Start chat with GPT
+`/chatgpt chat` Start chat with GPT  
 `/chatgpt renew` Renew the global chat(Admin)
 
 ## Configuration file
