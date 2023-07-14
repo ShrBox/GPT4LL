@@ -16,13 +16,15 @@ namespace ChatModule {
 
     bool processChatMessage(Event::PlayerChatEvent ev) {
         if (std::find(enabledPlayers.begin(), enabledPlayers.end(), ev.mPlayer->getXuid()) != enabledPlayers.end()) {
-            std::string messageReceived = ev.mPlayer->getRealName() + " said: " + ev.mMessage;
-            std::thread([messageReceived] {
+            std::string &messageReceived = ev.mMessage;
+            std::string playerName = ev.mPlayer->getRealName();
+            std::thread([messageReceived, playerName] {
                 try {
                     if (request_header.empty()) {
                         request_header = init_request_header;
                     }
                     request_header.at("messages").push_back({{"role",    "user"},
+                                                             {"name",    playerName},
                                                              {"content", messageReceived}});
                     nlohmann::basic_json reply = openai::chat().create(request_header);
                     std::string msg;
@@ -74,7 +76,8 @@ namespace ChatModule {
                                           break;
                                       }
                                       case do_hash("renew"): {
-                                          if (origin.getPermissionsLevel() >= CommandPermissionLevel::GameMasters || ChatModule::hasError) {
+                                          if (origin.getPermissionsLevel() >= CommandPermissionLevel::GameMasters ||
+                                              ChatModule::hasError) {
                                               request_header.clear();
                                               ChatModule::hasError = false;
                                               output.success("New conversation started");
