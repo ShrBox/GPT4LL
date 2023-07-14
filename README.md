@@ -5,7 +5,7 @@ Chat with GPT in Bedrock Dedicated Server with LiteLoaderBDS
 ## Usage
 
 `/chatgpt chat` Start chat with GPT  
-`/chatgpt renew` Renew the global chat(Admin)
+`/chatgpt renew` Renew the global chat(Admin or exception occurred)
 
 ## Configuration file
 

@@ -8,6 +8,7 @@
 extern Logger logger;
 
 namespace ChatModule {
+    bool hasError;
     nlohmann::basic_json init_request_header;
     nlohmann::basic_json request_header;
     std::vector<std::string> enabledPlayers;
@@ -30,14 +31,15 @@ namespace ChatModule {
                         if (choices.find("message") != choices.end()) {
                             nlohmann::json &message = choices.at("message");
                             msg = message.value("content", "");
-                            request_header.at("messages").push_back({{"role",    "assistant"},
-                                                                     {"content", msg}});
+                            request_header.at("messages").push_back(message);
                         }
                     }
+                    logger.info("{}{}", reply_format, msg);
                     Schedule::nextTick([msg] {
-                        Global<Level>->broadcastText("GPT > " + msg, TextType::RAW);
+                        Global<Level>->broadcastText(reply_format + msg, TextType::RAW);
                     });
                 } catch (std::exception &e) {
+                    hasError = true;
                     logger.error(e.what());
                 }
             }).detach();
@@ -53,13 +55,13 @@ namespace ChatModule {
                               {{"mode"}},
                               [](DynamicCommand const &command, CommandOrigin const &origin, CommandOutput &output,
                                  std::unordered_map<std::string, DynamicCommand::Result> &results) {
-                                  if (origin.getOriginType() != (CommandOriginType) OriginType::Player) {
-                                      output.error("You are not player");
-                                      return;
-                                  }
                                   auto action = results["mode_enum"].get<std::string>();
                                   switch (do_hash(action.c_str())) {
                                       case do_hash("chat"): {
+                                          if (origin.getOriginType() != (CommandOriginType) OriginType::Player) {
+                                              output.error("You are not player");
+                                              return;
+                                          }
                                           std::string xuid = origin.getPlayer()->getXuid();
                                           auto it = std::find(enabledPlayers.begin(), enabledPlayers.end(), xuid);
                                           if (it != enabledPlayers.end()) {
@@ -72,8 +74,9 @@ namespace ChatModule {
                                           break;
                                       }
                                       case do_hash("renew"): {
-                                          if (origin.getPermissionsLevel() >= CommandPermissionLevel::GameMasters) {
+                                          if (origin.getPermissionsLevel() >= CommandPermissionLevel::GameMasters || ChatModule::hasError) {
                                               request_header.clear();
+                                              ChatModule::hasError = false;
                                               output.success("New conversation started");
                                           } else {
                                               output.error("No permission");
@@ -81,7 +84,7 @@ namespace ChatModule {
                                           break;
                                       }
                                       default:
-                                          output.error("Are you kidding me?");
+                                          return;
                                   }
                               }, CommandPermissionLevel::Any);
     }
